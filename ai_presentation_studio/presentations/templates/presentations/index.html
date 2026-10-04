@@ -1,0 +1,109 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PresentAI Studio</title>
+  <link rel="stylesheet" href="{% static 'presentations/css/app.css' %}">
+</head>
+<body>
+<div class="shell">
+  <nav class="nav">
+    <a class="brand" href="/"><span class="brand-mark"></span>PRESENT<span>AI</span></a>
+    <div class="badge {% if ai_status.ready %}ready{% elif ai_status.demo %}demo{% else %}offline{% endif %}">
+      <span class="live-dot"></span>
+      {% if ai_status.ready %}Gemini ready · {{ ai_status.model }}{% elif ai_status.demo %}Demo mode{% else %}Gemini API ulanmagan{% endif %}
+    </div>
+  </nav>
+
+  <main class="hero-grid">
+    <section class="hero-copy">
+      <div class="eyebrow">AI PRESENTATION BUILDER</div>
+      <h1>Prompt yozing.<br><em>Prezentatsiya tayyor.</em></h1>
+      <p>AI struktura va matnni ishlab beradi. Python esa tanlangan ranglar va professional layout engine orqali PowerPoint fayl yaratadi.</p>
+      <div class="mini-cards">
+        <div><b>01</b><span>Prompt</span></div>
+        <div><b>02</b><span>Rang tanlang</span></div>
+        <div><b>03</b><span>PPTX</span></div>
+      </div>
+    </section>
+
+    <section class="form-card">
+      {% if messages %}{% for message in messages %}<div class="alert">{{ message }}</div>{% endfor %}{% endif %}
+      <form method="post" action="{% url 'presentations:generate' %}" id="generator-form">
+        {% csrf_token %}
+        <label>{{ form.prompt.label }}</label>
+        {{ form.prompt }}
+        {% if form.prompt.errors %}<small class="form-error">{{ form.prompt.errors }}</small>{% endif %}
+
+        <div class="row2">
+          <div><label>Slaydlar</label>{{ form.slide_count }}</div>
+          <div><label>Til</label>{{ form.language }}</div>
+        </div>
+
+        {{ form.color_preset }}
+        <div class="section-head">
+          <div>
+            <label class="section-label">Prezentatsiya ranglari</label>
+            <p>Slaydlar uchun tayyor palette tanlang yoki o‘zingiz rang yarating.</p>
+          </div>
+          <span class="selected-palette-label" id="selected-palette-label">Red / Black</span>
+        </div>
+
+        <div class="palette-grid" id="palette-grid">
+          {% for item in palettes %}
+          <button
+            type="button"
+            class="palette-card{% if item.value == 'red' %} active{% endif %}"
+            data-palette="{{ item.value }}"
+            data-label="{{ item.label }}"
+            data-bg="{{ item.bg }}"
+            data-accent="{{ item.accent }}"
+            data-text="{{ item.text }}"
+            aria-label="{{ item.label }}"
+          >
+            <span class="palette-swatch" style="--p-bg:{{ item.bg }};--p-accent:{{ item.accent }};--p-text:{{ item.text }}">
+              <i></i><i></i><i></i>
+            </span>
+            <span>{{ item.label }}</span>
+            <b>✓</b>
+          </button>
+          {% endfor %}
+        </div>
+
+        <div class="custom-colors" id="custom-colors" hidden>
+          <div class="color-field">
+            <label>Background</label>
+            <div class="color-control">{{ form.background_color }}<span id="bg-hex">#111111</span></div>
+          </div>
+          <div class="color-field">
+            <label>Accent</label>
+            <div class="color-control">{{ form.accent_color }}<span id="accent-hex">#FF0000</span></div>
+          </div>
+          <div class="color-field">
+            <label>Text</label>
+            <div class="color-control">{{ form.text_color }}<span id="text-hex">#FFFFFF</span></div>
+          </div>
+          <div class="custom-preview" id="custom-preview">
+            <small>LIVE PREVIEW</small>
+            <strong>Presentation</strong>
+            <span>Custom colors</span>
+          </div>
+        </div>
+
+        <button class="generate" type="submit"><span>✦</span> Generate presentation <b>→</b></button>
+        <p class="hint">Haqiqiy prezentatsiya Gemini orqali yaratiladi. Demo mode faqat <code>PRESENTATION_DEMO_MODE=true</code> bo‘lsa ishlaydi.</p>
+      </form>
+    </section>
+  </main>
+
+  <section class="features">
+    <article><span>01</span><b>Structured AI</b><p>Gemini JSON schema asosida toza va boshqariladigan struktura beradi.</p></article>
+    <article><span>02</span><b>Color System</b><p>Tayyor palette yoki custom ranglar preview va PPTX ichiga bir xil o‘tadi.</p></article>
+    <article><span>03</span><b>Real PPTX</b><p>Natijani tahrirlash mumkin bo‘lgan PowerPoint fayl sifatida yuklab olasiz.</p></article>
+  </section>
+</div>
+<script src="{% static 'presentations/js/app.js' %}"></script>
+</body>
+</html>

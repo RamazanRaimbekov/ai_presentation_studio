@@ -1,0 +1,21 @@
+PRESENTAI STUDIO — QUICK START
+
+1) Terminalni loyiha papkasida oching.
+2) Virtual environment:
+   python -m venv venv
+3) Windows:
+   venv\Scripts\activate
+   macOS/Linux:
+   source venv/bin/activate
+4) pip install -r requirements.txt
+5) API kalitlar uchun .env.example faylini .env nomi bilan copy qiling.
+6) .env ichida GEMINI_API_KEY ni Google AI Studio'dagi haqiqiy key bilan to'ldiring.
+7) Haqiqiy AI generatsiya uchun PRESENTATION_DEMO_MODE=false qoldiring.
+8) python manage.py migrate
+9) python manage.py runserver
+10) http://127.0.0.1:8000/
+
+MUHIM:
+- Eski build config/.env dan foydalangan bo'lsa ham, yangi settings.py uni fallback sifatida o'qiydi.
+- API key topilmasa sayt endi generic demo kontentni yashirincha ko'rsatmaydi; aniq xato chiqaradi.
+- PEXELS_API_KEY bo'lsa, content_image slaydlari browser preview va PPTX ichida rasm bilan ishlaydi.

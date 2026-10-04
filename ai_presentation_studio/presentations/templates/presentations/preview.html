@@ -1,0 +1,121 @@
+{% load static %}
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ presentation.title }}</title>
+  <link rel="stylesheet" href="{% static 'presentations/css/app.css' %}">
+</head>
+<body class="preview-page">
+<div class="preview-shell">
+  <header class="preview-header">
+    <div>
+      <a class="brand" href="/"><span class="brand-mark"></span>PRESENT<span>AI</span></a>
+      <h2>{{ presentation.title }}</h2>
+      <p>{{ presentation.description }}</p>
+      <div class="preview-meta-row">
+        <div class="preview-palette">
+          <span style="background:{{ colors.bg }}"></span>
+          <span style="background:{{ colors.accent }}"></span>
+          <span style="background:{{ colors.fg }}"></span>
+          <small>{{ palette|upper }} palette</small>
+        </div>
+        <span class="ai-chip {% if ai_status.ready %}ready{% else %}demo{% endif %}">
+          {% if ai_status.ready %}● AI GENERATED{% else %}● DEMO MODE{% endif %}
+        </span>
+      </div>
+    </div>
+    <div class="actions">
+      <form method="post" action="{% url 'presentations:regenerate' %}">{% csrf_token %}<button class="secondary">↻ Regenerate</button></form>
+      <a class="download" href="{% url 'presentations:download' %}">↓ Download PPTX</a>
+    </div>
+  </header>
+
+  {% if messages %}{% for message in messages %}<div class="alert wide">{{ message }}</div>{% endfor %}{% endif %}
+
+  <div class="slides-grid">
+  {% for slide in presentation.slides %}
+    <article class="slide-card slide-{{ slide.type }}" style="--s-bg:{{ colors.bg }};--s-panel:{{ colors.panel }};--s-fg:{{ colors.fg }};--s-muted:{{ colors.muted }};--s-accent:{{ colors.accent }}">
+      <div class="slide-number">{{ forloop.counter|stringformat:'02d' }}</div>
+
+      {% if slide.type == 'title' %}
+        <div class="title-layout">
+          <div class="slide-kicker">AI PRESENTATION</div>
+          <h3>{{ slide.title }}</h3>
+          {% if slide.subtitle %}<p class="subtitle">{{ slide.subtitle }}</p>{% endif %}
+          <span class="title-line"></span>
+        </div>
+
+      {% elif slide.type == 'content_image' %}
+        <div class="slide-kicker">VISUAL</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="image-layout">
+          <ul>{% for item in slide.content %}<li>{{ item }}</li>{% endfor %}</ul>
+          <div class="slide-image-box">
+            {% if slide.preview_image_url %}
+              <img src="{{ slide.preview_image_url }}" alt="{{ slide.image_query|default:slide.title }}">
+            {% else %}
+              <div class="image-placeholder"><b>IMAGE</b><span>{{ slide.image_query }}</span></div>
+            {% endif %}
+          </div>
+        </div>
+
+      {% elif slide.type == 'comparison' %}
+        <div class="slide-kicker">COMPARISON</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="compare">
+          <div><b>{{ slide.left_title }}</b><span>{{ slide.left_text }}</span></div>
+          <div><b>{{ slide.right_title }}</b><span>{{ slide.right_text }}</span></div>
+        </div>
+
+      {% elif slide.type == 'cards' %}
+        <div class="slide-kicker">KEY IDEAS</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="cards-layout">
+          {% for item in slide.content|slice:':3' %}
+            <div><small>0{{ forloop.counter }}</small><b>{{ item }}</b></div>
+          {% endfor %}
+        </div>
+
+      {% elif slide.type == 'stats' %}
+        <div class="slide-kicker">METRIC</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="big-stat">{{ slide.stat_value }}</div>
+        <p class="stat-label">{{ slide.stat_label }}</p>
+
+      {% elif slide.type == 'steps' %}
+        <div class="slide-kicker">PROCESS</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="steps-layout">
+          {% for item in slide.content|slice:':5' %}
+            <div><small>0{{ forloop.counter }}</small><b>{{ item }}</b></div>
+          {% endfor %}
+        </div>
+
+      {% elif slide.type == 'quote' %}
+        <div class="slide-kicker">QUOTE</div>
+        <h3>{{ slide.title }}</h3>
+        <div class="quote-mark">“</div>
+        <blockquote>{% if slide.content %}{{ slide.content.0 }}{% else %}{{ slide.subtitle }}{% endif %}</blockquote>
+
+      {% elif slide.type == 'ending' %}
+        <div class="ending-layout">
+          <div class="slide-kicker">END</div>
+          <h3>{{ slide.title }}</h3>
+          {% if slide.subtitle %}<p class="subtitle">{{ slide.subtitle }}</p>{% endif %}
+          <span class="title-line"></span>
+        </div>
+
+      {% else %}
+        <div class="slide-kicker">OVERVIEW</div>
+        <h3>{{ slide.title }}</h3>
+        {% if slide.subtitle %}<p class="subtitle">{{ slide.subtitle }}</p>{% endif %}
+        <div class="content-panel"><ul>{% for item in slide.content %}<li>{{ item }}</li>{% endfor %}</ul></div>
+      {% endif %}
+    </article>
+  {% endfor %}
+  </div>
+</div>
+</body>
+</html>

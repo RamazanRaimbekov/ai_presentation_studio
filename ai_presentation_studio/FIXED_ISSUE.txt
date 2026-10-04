@@ -1,0 +1,26 @@
+MUAMMO SABABI
+=============
+Oldingi settings.py faqat loyiha rootidagi .env faylini o'qirdi.
+API key esa config/.env ichida edi. Shu sabab GEMINI_API_KEY bo'sh bo'lib,
+generate_presentation() doim generic _demo() natijasini qaytarardi.
+
+TUZATILDI
+=========
+1. settings.py endi root .env va config/.env fallbackni o'qiydi.
+2. API key yo'q bo'lsa generic demo yashirincha chiqmaydi — aniq xato ko'rsatiladi.
+3. Demo faqat PRESENTATION_DEMO_MODE=true bo'lsa ishlaydi.
+4. Gemini prompti mavzuga xos to'liq prezentatsiya yaratishga kuchaytirildi.
+5. Slayd soni noto'g'ri chiqsa avtomatik 1 marta retry qiladi.
+6. content_image slaydlari Pexels key bo'lsa browser previewda ham rasm ko'rsatadi.
+7. Preview layoutlar title/cards/steps/stats/quote/comparison/image ko'rinishida alohida chiziladi.
+8. requirements.txt qo'shildi.
+9. .env.example ichidan real API keylar olib tashlandi.
+
+ISHGA TUSHIRISH
+===============
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+
+Eslatma: live Gemini API chaqirig'i ushbu sandboxda internet bo'lmagani sabab tekshirilmadi,
+lekin Python sintaksisi, schema va PPTX builder lokal ravishda tekshirildi.
